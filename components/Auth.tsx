@@ -64,24 +64,20 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden text-slate-800 dark:text-slate-200">
-      {/* Background Video */}
+      {/* Background Image */}
       <div className="absolute inset-0 w-full h-full z-0">
-         <div className="absolute inset-0 bg-black/40 z-10 backdrop-blur-[2px]"></div>
-         <video 
-            autoPlay 
-            loop 
-            muted 
-            playsInline
+         <div className="absolute inset-0 bg-blue-900/30 dark:bg-black/50 z-10 backdrop-blur-[2px]"></div>
+         <img 
+            src="https://images.unsplash.com/photo-1542359649-31e03cd4d909?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80"
+            alt="Vayama Background"
             className="w-full h-full object-cover"
-         >
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-waves-coming-to-the-beach-5016-large.mp4" type="video/mp4" />
-         </video>
+         />
       </div>
 
       <div className="w-full max-w-sm z-20">
         <header className="text-center mb-8">
           <h1 className="text-5xl font-bold text-white tracking-tight drop-shadow-md">VAYAMA</h1>
-          <p className="text-slate-200 mt-2 text-lg font-light drop-shadow-sm">Explore. Connect. Book.</p>
+          <p className="text-slate-100 mt-2 text-lg font-light drop-shadow-sm">Social Exploration & Booking</p>
         </header>
 
         <div className="bg-white/90 dark:bg-black/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/20">

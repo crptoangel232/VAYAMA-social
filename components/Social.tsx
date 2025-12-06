@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Post, Comment, Tab } from '../types';
 import { mockPosts, mockStories } from '../data/mockData';
-import { LikeIcon, CommentIcon, ShareIcon, PhotoIcon, CameraIcon, LocationMarkerIcon, ReplyIcon, SendIcon, MusicIcon } from './common/icons';
+import { LikeIcon, CommentIcon, ShareIcon, PhotoIcon, CameraIcon, LocationMarkerIcon, ReplyIcon, SendIcon, MusicIcon, ReelsIcon } from './common/icons';
 import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
 
 type User = Post['user'];
@@ -154,14 +154,33 @@ const CommentComponent: React.FC<{
     </div>
 );
 
-const PostComponent: React.FC<{ post: Post; onSelectProfile: (user: User) => void; }> = ({ post, onSelectProfile }) => {
+const PostComponent: React.FC<{ 
+    post: Post; 
+    onSelectProfile: (user: User) => void; 
+    onShareToReels: (post: Post) => void; 
+}> = ({ post, onSelectProfile, onShareToReels }) => {
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(post.likes);
     const [commentsVisible, setCommentsVisible] = useState(false);
     const [comments, setComments] = useState<Comment[]>(post.commentsData || []);
     const [newComment, setNewComment] = useState('');
     const [replyTo, setReplyTo] = useState<{id: string, user: string} | null>(null);
+    const [showShareMenu, setShowShareMenu] = useState(false);
     const commentInputRef = useRef<HTMLInputElement>(null);
+    const shareMenuRef = useRef<HTMLDivElement>(null);
+
+    // Close share menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+                setShowShareMenu(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
     
     const handleLikePost = () => {
       setIsLiked(!isLiked);
@@ -217,55 +236,105 @@ const PostComponent: React.FC<{ post: Post; onSelectProfile: (user: User) => voi
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <div className="bg-white dark:bg-slate-900 mb-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden mx-2 mt-2">
             <div className="p-3 flex items-center justify-between">
                 <div className="flex items-center cursor-pointer" onClick={() => onSelectProfile(post.user)}>
-                    <img src={post.user.avatar} alt={post.user.name} className="w-8 h-8 rounded-full object-cover" />
+                    <div className="p-0.5 bg-gradient-to-tr from-yellow-400 to-red-500 rounded-full">
+                        <img src={post.user.avatar} alt={post.user.name} className="w-9 h-9 rounded-full object-cover border-2 border-white dark:border-black" />
+                    </div>
                     <div className="ml-3">
-                        <p className="font-semibold text-sm">{post.user.name}</p>
+                        <p className="font-bold text-sm hover:underline">{post.user.name}</p>
                         {post.location && <p className="text-xs text-slate-500">{post.location}</p>}
                     </div>
                 </div>
-                 <p className="text-xs text-slate-500">{post.timestamp}</p>
+                 <p className="text-xs text-slate-400">{post.timestamp}</p>
             </div>
 
-            {post.content.imageUrl && <img src={post.content.imageUrl} alt="Post content" className="w-full h-auto" />}
+            {post.content.imageUrl && (
+                <div className="relative">
+                    <img src={post.content.imageUrl} alt="Post content" className="w-full h-auto object-cover max-h-[500px]" />
+                </div>
+            )}
             
             <div className="p-3">
-                <div className="flex items-center space-x-4">
-                    <button onClick={handleLikePost}><LikeIcon isLiked={isLiked} /></button>
-                    <button onClick={() => setCommentsVisible(!commentsVisible)}><CommentIcon /></button>
-                    <button onClick={() => alert('Share feature is a mock.')}><ShareIcon /></button>
+                <div className="flex items-center justify-between relative">
+                    <div className="flex items-center space-x-4">
+                        <button onClick={handleLikePost} className="hover:scale-110 transition-transform">
+                            <LikeIcon isLiked={isLiked} className={`h-7 w-7 ${isLiked ? 'text-red-500' : 'text-slate-800 dark:text-white'}`} />
+                        </button>
+                        <button onClick={() => setCommentsVisible(!commentsVisible)} className="hover:scale-110 transition-transform">
+                            <CommentIcon />
+                        </button>
+                        <div className="relative" ref={shareMenuRef}>
+                            <button onClick={() => setShowShareMenu(!showShareMenu)} className="hover:scale-110 transition-transform">
+                                <ShareIcon />
+                            </button>
+                            {showShareMenu && (
+                                <div className="absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 z-20 py-1 animate-[fadeIn_0.1s_ease-out]">
+                                    <button 
+                                        onClick={() => {
+                                            onShareToReels(post);
+                                            setShowShareMenu(false);
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
+                                    >
+                                        <ReelsIcon /> Share to Reels
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            alert("Link copied!");
+                                            setShowShareMenu(false);
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700"
+                                    >
+                                        Copy Link
+                                    </button>
+                                     <button 
+                                        onClick={() => {
+                                            setShowShareMenu(false);
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
-                <p className="text-sm font-semibold mt-2">{likeCount.toLocaleString()} likes</p>
+
+                <p className="text-sm font-bold mt-2">{likeCount.toLocaleString()} likes</p>
+                
                 {post.content.text && (
-                    <p className="text-sm mt-1">
-                        <span className="font-semibold cursor-pointer" onClick={() => onSelectProfile(post.user)}>{post.user.name}</span>
-                        <span className="ml-1">{post.content.text}</span>
-                    </p>
+                    <div className="mt-1 text-sm">
+                        <span className="font-bold mr-2 cursor-pointer" onClick={() => onSelectProfile(post.user)}>{post.user.name}</span>
+                        <span>{post.content.text}</span>
+                    </div>
                 )}
+                
                  {post.music && (
-                    <div className="mt-2 text-xs flex items-center text-slate-500 dark:text-slate-400">
+                    <div className="mt-2 text-xs flex items-center text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 w-fit px-2 py-1 rounded-full">
                         <MusicIcon />
-                        <span className="ml-2">{post.music.title} - {post.music.artist}</span>
+                        <span className="ml-2 font-medium">{post.music.title} • {post.music.artist}</span>
                     </div>
                  )}
-                <button onClick={() => setCommentsVisible(!commentsVisible)} className="text-sm text-slate-500 mt-1">
+
+                <button onClick={() => setCommentsVisible(!commentsVisible)} className="text-sm text-slate-500 mt-2">
                    {commentsVisible ? 'Hide comments' : `View all ${comments.length} comments`}
                 </button>
 
                 {commentsVisible && (
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-3 space-y-3 border-t border-slate-100 dark:border-slate-800 pt-3">
                         {comments.map(c => <CommentComponent key={c.id} comment={c} onReply={handleReply} onLike={handleLikeComment} />)}
                         
                         <div className="relative pt-2">
                              {replyTo && (
-                                <div className="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 p-1 rounded-t-md">
-                                    Replying to {replyTo.user}
-                                    <button onClick={() => setReplyTo(null)} className="font-bold ml-2">x</button>
+                                <div className="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 p-1 rounded-t-md flex justify-between items-center">
+                                    <span>Replying to <span className="font-bold">{replyTo.user}</span></span>
+                                    <button onClick={() => setReplyTo(null)} className="px-2 font-bold text-slate-400">×</button>
                                 </div>
                             )}
-                            <div className="flex items-center">
+                            <div className="flex items-center gap-2">
                                 <input
                                     ref={commentInputRef}
                                     type="text"
@@ -273,9 +342,9 @@ const PostComponent: React.FC<{ post: Post; onSelectProfile: (user: User) => voi
                                     onChange={e => setNewComment(e.target.value)}
                                     onKeyPress={e => e.key === 'Enter' && handlePostComment()}
                                     placeholder="Add a comment..."
-                                    className={`w-full bg-slate-100 dark:bg-slate-800 text-sm p-2 outline-none ${replyTo ? 'rounded-b-md' : 'rounded-md'}`}
+                                    className={`flex-grow bg-slate-100 dark:bg-slate-800 text-sm p-3 outline-none ${replyTo ? 'rounded-b-xl rounded-tr-xl' : 'rounded-xl'}`}
                                 />
-                                <button onClick={handlePostComment} className="ml-2 p-2 text-blue-500 hover:text-blue-600 disabled:text-slate-400" disabled={!newComment.trim()}>Post</button>
+                                <button onClick={handlePostComment} className="p-2 text-blue-500 font-bold disabled:text-slate-400 disabled:cursor-not-allowed" disabled={!newComment.trim()}>Post</button>
                             </div>
                         </div>
                     </div>
@@ -286,7 +355,7 @@ const PostComponent: React.FC<{ post: Post; onSelectProfile: (user: User) => voi
 };
 
 // Main Social Component
-const Social: React.FC<{ setActiveTab: (tab: Tab) => void; }> = ({ setActiveTab }) => {
+const Social: React.FC<{ setActiveTab: (tab: Tab) => void; showNotification?: (msg: string) => void }> = ({ setActiveTab, showNotification }) => {
   const [posts, setPosts] = useState<Post[]>(mockPosts.filter(p => !p.content.videoUrl));
   const [viewingProfile, setViewingProfile] = useState<User | null>(null);
   const [viewingStory, setViewingStory] = useState<Story | null>(null);
@@ -322,11 +391,16 @@ const Social: React.FC<{ setActiveTab: (tab: Tab) => void; }> = ({ setActiveTab 
                          timestamp: 'Just now',
                          content: {
                              text: payload.new.content,
-                             imageUrl: payload.new.image_url
+                             imageUrl: payload.new.image_url,
+                             videoUrl: payload.new.video_url
                          },
                          likes: 0
                     };
-                    setPosts(prev => [newRealtimePost, ...prev]);
+                    // Filter out video/reel posts from main feed if desired, or keep them.
+                    // Assuming feed handles images mostly.
+                    if (!payload.new.video_url) {
+                        setPosts(prev => [newRealtimePost, ...prev]);
+                    }
                 }
             )
             .subscribe();
@@ -352,12 +426,14 @@ const Social: React.FC<{ setActiveTab: (tab: Tab) => void; }> = ({ setActiveTab 
               timestamp: new Date(p.created_at).toLocaleTimeString(),
               content: {
                   text: p.content,
-                  imageUrl: p.image_url
+                  imageUrl: p.image_url,
+                  videoUrl: p.video_url
               },
               likes: p.likes || 0
           }));
-          // Merge with mock posts for demo fullness
-          setPosts([...mappedPosts, ...mockPosts.filter(p => !p.content.videoUrl)]);
+          // Merge with mock posts, filtering out ones that are specifically reels (videos) for the feed view if desired
+          // But here we'll mix them or follow the previous logic of filtering out videoUrl from mockPosts
+          setPosts([...mappedPosts.filter(p => !p.content.videoUrl), ...mockPosts.filter(p => !p.content.videoUrl)]);
       }
   };
 
@@ -485,6 +561,30 @@ const Social: React.FC<{ setActiveTab: (tab: Tab) => void; }> = ({ setActiveTab 
     setImageStyle({});
   };
 
+  const handleShareToReels = async (post: Post) => {
+      // Simulate or actually insert a Reel
+      const content = post.content.imageUrl || post.content.videoUrl;
+      if (!content) return;
+
+      if (isSupabaseConfigured()) {
+          try {
+               await supabase.from('posts').insert({
+                content: post.content.text || '',
+                video_url: content, // We treat the image as a 'video' source for Reels logic for now, or assume it handles images
+                // In a real app we might convert it to a video or have a separate 'type' field
+                user_id: 'current_user_id', // Mocked
+                likes: 0
+            });
+            if (showNotification) showNotification('Shared to Reels successfully!');
+          } catch(e) {
+              console.error(e);
+          }
+      } else {
+          // Mock behavior
+          if (showNotification) showNotification('Shared to Reels! (Mock)');
+      }
+  };
+
   if (viewingProfile) {
       return <UserProfile user={viewingProfile} posts={posts} onBack={() => setViewingProfile(null)} />;
   }
@@ -539,10 +639,10 @@ const Social: React.FC<{ setActiveTab: (tab: Tab) => void; }> = ({ setActiveTab 
           <div style={{ transform: `translateY(${Math.min(pullY, 80)}px)`, transition: pullY === 0 ? 'transform 0.3s ease-out' : 'none' }}>
               {/* Stories */}
             <div className="p-3 border-b border-slate-200 dark:border-slate-800">
-                    <div className="flex space-x-4 overflow-x-auto pb-2">
+                    <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
                         {mockStories.map(story => (
-                            <div key={story.id} onClick={() => setViewingStory(story)} className="flex-shrink-0 flex flex-col items-center space-y-1 cursor-pointer">
-                                <div className={`w-16 h-16 rounded-full p-0.5 ${story.id > 1 ? 'bg-gradient-to-tr from-yellow-400 to-red-500' : 'bg-slate-300'}`}>
+                            <div key={story.id} onClick={() => setViewingStory(story)} className="flex-shrink-0 flex flex-col items-center space-y-1 cursor-pointer group">
+                                <div className={`w-16 h-16 rounded-full p-0.5 ${story.id > 1 ? 'bg-gradient-to-tr from-yellow-400 to-red-500' : 'bg-slate-300'} group-hover:scale-105 transition-transform`}>
                                     <img src={story.avatar} alt={story.name} className="w-full h-full rounded-full object-cover border-2 border-white dark:border-black"/>
                                 </div>
                                 <p className="text-xs w-16 truncate text-center">{story.name}</p>
@@ -557,54 +657,52 @@ const Social: React.FC<{ setActiveTab: (tab: Tab) => void; }> = ({ setActiveTab 
                     value={newPostText}
                     onChange={e => setNewPostText(e.target.value)}
                     placeholder="What's on your travel mind?"
-                    className="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-md outline-none text-sm"
+                    className="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-xl outline-none text-sm resize-none"
                     rows={2}
                 />
                 {newPostImage && (
                     <div className="mt-2 relative">
-                        <img src={newPostImage.url} style={imageStyle} alt="Post preview" className="rounded-md max-h-40 w-auto"/>
-                        <button onClick={() => setNewPostImage(null)} className="absolute top-1 right-1 bg-black/50 text-white rounded-full h-6 w-6 text-sm flex items-center justify-center">x</button>
-                        <button onClick={() => setShowEditor(true)} className="absolute bottom-1 right-1 bg-black/50 text-white text-xs p-1 rounded-md">Edit</button>
+                        <img src={newPostImage.url} style={imageStyle} alt="Post preview" className="rounded-xl max-h-60 w-full object-cover"/>
+                        <button onClick={() => setNewPostImage(null)} className="absolute top-2 right-2 bg-black/50 text-white rounded-full h-6 w-6 text-sm flex items-center justify-center">x</button>
+                        <button onClick={() => setShowEditor(true)} className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-md">Edit</button>
                     </div>
                 )}
                 {(newPostLocation || newPostMusic) && (
                     <div className="mt-2 space-y-1">
                         {newPostLocation && (
-                            <div className="text-xs flex items-center text-blue-500 bg-blue-500/10 p-1 rounded-md w-fit">
+                            <div className="text-xs flex items-center text-blue-500 bg-blue-500/10 p-1.5 rounded-lg w-fit">
                                 <LocationMarkerIcon className="h-4 w-4 mr-1"/>
                                 {newPostLocation}
-                                <button onClick={() => setNewPostLocation(null)} className="font-bold ml-2 text-red-500">x</button>
+                                <button onClick={() => setNewPostLocation(null)} className="font-bold ml-2 text-red-500 px-1">×</button>
                             </div>
                         )}
                         {newPostMusic && (
-                            <div className="text-xs flex items-center text-purple-500 bg-purple-500/10 p-1 rounded-md w-fit">
+                            <div className="text-xs flex items-center text-purple-500 bg-purple-500/10 p-1.5 rounded-lg w-fit">
                                 <MusicIcon />
                                 <span className="ml-2">{newPostMusic.title}</span>
-                                <button onClick={() => setNewPostMusic(null)} className="font-bold ml-2 text-red-500">x</button>
+                                <button onClick={() => setNewPostMusic(null)} className="font-bold ml-2 text-red-500 px-1">×</button>
                             </div>
                         )}
                     </div>
                 )}
-                <div className="flex items-center justify-between mt-2">
+                <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400">
                         <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden"/>
-                        <button onClick={() => fileInputRef.current?.click()} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800"><PhotoIcon /></button>
-                        <button onClick={() => alert('Camera access is a mock feature. Select from gallery.')} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800"><CameraIcon /></button>
-                        <button onClick={handleGetLocation} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800"><LocationMarkerIcon /></button>
-                        <button onClick={() => setShowMusicModal(true)} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800"><MusicIcon /></button>
+                        <button onClick={() => fileInputRef.current?.click()} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><PhotoIcon /></button>
+                        <button onClick={() => alert('Camera access is a mock feature. Select from gallery.')} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><CameraIcon /></button>
+                        <button onClick={handleGetLocation} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><LocationMarkerIcon /></button>
+                        <button onClick={() => setShowMusicModal(true)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><MusicIcon /></button>
                     </div>
-                    <button onClick={handleCreatePost} className="bg-blue-500 text-white font-bold py-2 px-6 rounded-md text-sm hover:bg-blue-600 disabled:bg-slate-300 dark:disabled:bg-slate-600" disabled={!newPostText.trim() && !newPostImage}>
+                    <button onClick={handleCreatePost} className="bg-blue-600 text-white font-bold py-1.5 px-5 rounded-full text-sm hover:bg-blue-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 transition-all shadow-md" disabled={!newPostText.trim() && !newPostImage}>
                         Post
                     </button>
                 </div>
             </div>
             
             {/* Posts Feed */}
-            <div>
-                {posts.map(post => <PostComponent key={post.id} post={post} onSelectProfile={setViewingProfile} />)}
+            <div className="pb-20 bg-slate-100 dark:bg-black">
+                {posts.map(post => <PostComponent key={post.id} post={post} onSelectProfile={setViewingProfile} onShareToReels={handleShareToReels} />)}
             </div>
-            {/* Padding for bottom nav */}
-            <div className="h-20"></div>
           </div>
       </div>
     </div>

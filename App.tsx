@@ -117,7 +117,7 @@ const App: React.FC = () => {
       case Tab.REELS:
         return <Reels />;
       case Tab.SOCIAL:
-        return <Social setActiveTab={setActiveTab} />;
+        return <Social setActiveTab={setActiveTab} showNotification={showNotification} />;
       case Tab.PROFILE:
         return (
           <Profile
@@ -136,17 +136,30 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-200 font-sans antialiased h-screen w-screen flex flex-col">
-      {notification && <Notification message={notification} onClose={() => setNotification(null)} />}
-      <div className="flex-grow overflow-hidden flex flex-col">
-        {/* Social and Reels handle their own scrolling/layout, others use default container */}
-        {activeTab === Tab.REELS || activeTab === Tab.SOCIAL ? (
-          <div className="flex-grow h-full">{renderContent()}</div>
-        ) : (
-          <div className="flex-grow overflow-y-auto pb-20">{renderContent()}</div>
-        )}
+    <div className="relative h-screen w-screen font-sans antialiased text-slate-800 dark:text-slate-200 overflow-hidden bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+      {/* Global Background Image with low opacity for texture */}
+      <div 
+        className="absolute inset-0 z-0 opacity-10 dark:opacity-10 pointer-events-none mix-blend-multiply dark:mix-blend-overlay"
+        style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1542359649-31e03cd4d909?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'grayscale(30%)'
+        }}
+      />
+
+      <div className="relative z-10 flex flex-col h-full">
+        {notification && <Notification message={notification} onClose={() => setNotification(null)} />}
+        <div className="flex-grow overflow-hidden flex flex-col">
+          {/* Social and Reels handle their own scrolling/layout, others use default container */}
+          {activeTab === Tab.REELS || activeTab === Tab.SOCIAL ? (
+            <div className="flex-grow h-full">{renderContent()}</div>
+          ) : (
+            <div className="flex-grow overflow-y-auto pb-20">{renderContent()}</div>
+          )}
+        </div>
+        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
-      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 };
