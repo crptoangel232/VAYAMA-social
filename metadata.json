@@ -1,9 +1,12 @@
 {
-  "name": "Vayama AI Social Booking",
-  "description": "An AI and chat-driven super-app where users can chat in real-time, get AI-planned trips, create mock bookings (rides, hotels, food), and more.",
+  "name": "KUNKU",
+  "description": "KUNKU - AI and chat-driven super-app with KUNKU PAY, travel assistant, social feeds, reels, and seamless bookings.",
   "requestFramePermissions": [
     "camera",
     "microphone",
     "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
 }

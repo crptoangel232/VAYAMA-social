@@ -12,12 +12,13 @@ export const mockStories = [
 export const mockPosts: Post[] = [
   {
     id: 101,
-    user: { name: 'VayamaAdventures', avatar: 'https://picsum.photos/seed/user101/200' },
+    user: { name: 'KUNKUAdventures', avatar: 'https://picsum.photos/seed/user101/200' },
     timestamp: '30m ago',
     location: 'Tokeh Beach',
     content: {
-      text: 'Waves crashing, sun setting. This is the life! 🌊☀️ #SierraLeone #BeachVibes',
-      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+      text: 'Waves crashing, sun setting. This is the life! 🌊☀️ #SierraLeone #BeachVibes #KUNKU',
+      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+      imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
     },
     likes: 352,
     commentsData: [
@@ -32,7 +33,8 @@ export const mockPosts: Post[] = [
     location: 'Freetown Market',
     content: {
       text: 'The hustle and bustle of a Freetown market is something else! So many colors and sounds.',
-      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80',
     },
     likes: 210,
     commentsData: [
@@ -47,7 +49,8 @@ export const mockPosts: Post[] = [
     location: 'Outamba-Kilimi National Park',
     content: {
       text: 'Exploring the incredible nature of Sierra Leone.',
-      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+      imageUrl: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&q=80',
     },
     likes: 541,
     commentsData: [],
@@ -59,7 +62,7 @@ export const mockPosts: Post[] = [
     timestamp: '2h ago',
     location: 'Lumley Beach, Freetown',
     content: {
-      text: 'Just captured this incredible sunset at Lumley Beach! Freetown never disappoints. #SaloneTravel #Vayama',
+      text: 'Just captured this incredible sunset at Lumley Beach! Freetown never disappoints. #SaloneTravel #KUNKU',
       imageUrl: 'https://picsum.photos/seed/post1/600/400',
     },
     likes: 124,
@@ -90,7 +93,7 @@ export const mockPosts: Post[] = [
     user: { name: 'alex_doe', avatar: 'https://picsum.photos/seed/user3/200' },
     timestamp: '1d ago',
     content: {
-      text: 'My trip to Bo was amazing! The AI planner on Vayama made it so easy to organize everything. So impressed!',
+      text: 'My trip to Bo was amazing! The AI planner on KUNKU made it so easy to organize everything. So impressed!',
     },
     likes: 45,
     commentsData: [],

@@ -25,12 +25,12 @@ const mockApiResults = {
 }
 
 const paymentOptions = [
-    { name: 'Pay with Wallet', icon: <WalletIcon /> },
-    { name: 'Cash on Delivery', icon: <CashIcon /> },
+    { name: 'KUNKU PAY', icon: <WalletIcon />, badge: 'Fast & Instant' },
     { name: 'Orange Money', icon: <MobileMoneyIcon /> },
     { name: 'AfriMoney', icon: <MobileMoneyIcon /> },
-    { name: 'Bank/Debit Card', icon: <CreditCardIcon /> }
-]
+    { name: 'Bank/Debit Card', icon: <CreditCardIcon /> },
+    { name: 'Cash on Delivery', icon: <CashIcon /> }
+];
 
 const Booking: React.FC<BookingProps> = ({ initialRequest, clearRequest, showNotification }) => {
   const [activeCategory, setActiveCategory] = useState<BookingCategory>('Ride');
@@ -159,9 +159,16 @@ const Booking: React.FC<BookingProps> = ({ initialRequest, clearRequest, showNot
                 <button 
                     key={opt.name} 
                     onClick={() => setSelectedPayment(opt.name)}
-                    className={`w-full flex items-center gap-3 p-3 text-left rounded-md border-2 transition-colors text-sm ${selectedPayment === opt.name ? 'bg-slate-200 dark:bg-slate-700 border-blue-500' : 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>
-                    <span className="text-blue-500">{opt.icon}</span>
-                    <span>{opt.name}</span>
+                    className={`w-full flex items-center justify-between p-3 text-left rounded-md border-2 transition-colors text-sm ${selectedPayment === opt.name ? 'bg-slate-200 dark:bg-slate-700 border-blue-500 shadow-sm' : 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>
+                    <div className="flex items-center gap-3">
+                        <span className="text-blue-500">{opt.icon}</span>
+                        <span className="font-semibold">{opt.name}</span>
+                    </div>
+                    {opt.badge && (
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-500 text-white">
+                            {opt.badge}
+                        </span>
+                    )}
                 </button>
             ))}
         </div>

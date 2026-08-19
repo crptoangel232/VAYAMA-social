@@ -8,50 +8,71 @@ const Reel: React.FC<{ post: Post; isVisible: boolean }> = ({ post, isVisible })
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(post.likes);
+    const [videoError, setVideoError] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
-        if (isVisible) {
-            // Attempt to play, handling promise rejections (e.g. low power mode, interactions needed)
-            const playPromise = videoRef.current?.play();
+        if (isVisible && !videoError && videoRef.current) {
+            const playPromise = videoRef.current.play();
             if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    // console.log("Autoplay prevented");
-                });
+                playPromise
+                    .then(() => setIsPlaying(true))
+                    .catch(() => {
+                        setIsPlaying(false);
+                    });
             }
-        } else {
-            videoRef.current?.pause();
+        } else if (videoRef.current) {
+            videoRef.current.pause();
+            setIsPlaying(false);
         }
-    }, [isVisible]);
+    }, [isVisible, videoError]);
     
     const handleLike = () => {
         setIsLiked(!isLiked);
         setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
     };
+
+    const togglePlay = () => {
+        if (!videoRef.current) return;
+        if (videoRef.current.paused) {
+            videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+        } else {
+            videoRef.current.pause();
+            setIsPlaying(false);
+        }
+    };
     
-    // Determine media type. If videoUrl is present, it's a video. If only imageUrl, treat as a static reel.
-    const isVideo = !!post.content.videoUrl;
+    // Determine if video can be shown
+    const hasVideo = Boolean(post.content.videoUrl) && !videoError;
+    const fallbackImage = post.content.imageUrl || post.user.avatar || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80';
 
     return (
-        <div className="h-full w-full relative snap-start flex items-center justify-center bg-black">
-            {isVideo ? (
+        <div className="h-full w-full relative snap-start flex items-center justify-center bg-black overflow-hidden">
+            {hasVideo ? (
                  <video
                     ref={videoRef}
-                    src={post.content.videoUrl}
                     loop
                     muted
                     playsInline
-                    className="w-full h-full object-cover"
-                    onClick={e => e.currentTarget.paused ? e.currentTarget.play() : e.currentTarget.pause()}
-                ></video>
+                    preload="metadata"
+                    onError={() => setVideoError(true)}
+                    className="w-full h-full object-cover cursor-pointer"
+                    onClick={togglePlay}
+                >
+                    <source src={post.content.videoUrl} type="video/mp4" />
+                </video>
             ) : (
-                <img 
-                    src={post.content.imageUrl} 
-                    alt="Reel content" 
-                    className="w-full h-full object-cover animate-[zoomIn_20s_infinite_alternate]"
-                />
+                <div className="w-full h-full relative overflow-hidden flex items-center justify-center bg-slate-900">
+                    <img 
+                        src={fallbackImage} 
+                        alt="Reel content" 
+                        className="w-full h-full object-cover animate-pulse"
+                    />
+                    <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]"></div>
+                </div>
             )}
            
-            <div className="absolute bottom-16 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent text-white">
+            <div className="absolute bottom-16 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent text-white pointer-events-auto">
                 <div className="flex items-end">
                     <div className="flex-grow">
                         <div className="flex items-center space-x-2">

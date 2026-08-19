@@ -13,9 +13,9 @@ interface ProfileProps {
 }
 
 const mockPaymentHistory = [
-    {id: 1, item: 'Flight to Bo', amount: '-$250.00', date: '2024-07-20'},
-    {id: 2, item: 'Radisson Blu Hotel', amount: '-$150.00', date: '2024-07-20'},
-    {id: 3, item: 'Wallet Top-up', amount: '+$500.00', date: '2024-07-19'},
+    {id: 1, item: 'Flight to Bo (KUNKU PAY)', amount: '-$250.00', date: '2024-07-20'},
+    {id: 2, item: 'Radisson Blu Hotel (KUNKU PAY)', amount: '-$150.00', date: '2024-07-20'},
+    {id: 3, item: 'KUNKU PAY Top-up', amount: '+$500.00', date: '2024-07-19'},
 ];
 
 const mockBookingHistory: BookingHistoryItem[] = [
@@ -28,7 +28,8 @@ const mockBookingHistory: BookingHistoryItem[] = [
 const TopUpModal: React.FC<{onClose: () => void}> = ({ onClose }) => (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-sm" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">Top-up Wallet</h3>
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Top-up KUNKU PAY</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Add funds to your KUNKU PAY balance</p>
             <div className="space-y-3">
                  <button className="w-full flex items-center gap-3 p-3 text-left rounded-md bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                     <CreditCardIcon/> Bank/Debit Card
@@ -66,14 +67,19 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, showNoti
         <p className="text-slate-500 dark:text-slate-400 text-sm">{user.email}</p>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-lg mb-6">
-        <h3 className="text-md font-semibold mb-2 text-blue-500">My Wallet</h3>
-        <div className="flex justify-between items-center">
-            <span className="text-slate-500 dark:text-slate-400 text-sm">Current Balance</span>
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-lg mb-6 border border-slate-100 dark:border-slate-800">
+        <div className="flex justify-between items-center mb-2">
+            <h3 className="text-md font-bold text-blue-500 flex items-center gap-1.5">
+                <WalletIcon /> KUNKU PAY
+            </h3>
+            <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 font-semibold px-2 py-0.5 rounded-full">Active</span>
+        </div>
+        <div className="flex justify-between items-center mt-2">
+            <span className="text-slate-500 dark:text-slate-400 text-sm">Available Balance</span>
             <span className="text-2xl font-bold text-green-500">$100.00</span>
         </div>
-        <button onClick={() => setShowTopUp(true)} className="w-full mt-4 bg-blue-500/90 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md transition-colors text-sm">
-            Top-up Wallet
+        <button onClick={() => setShowTopUp(true)} className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 px-4 rounded-md transition-colors text-sm shadow-sm">
+            Top-up KUNKU PAY
         </button>
       </div>
 

@@ -1,5 +1,3 @@
-import { Type } from "@google/genai";
-
 export enum Tab {
   AI = 'AI',
   BOOK = 'Book',
@@ -101,23 +99,23 @@ export interface Post {
 
 
 export const ItinerarySchema = {
-  type: Type.ARRAY,
+  type: 'ARRAY',
   items: {
-    type: Type.OBJECT,
+    type: 'OBJECT',
     properties: {
-      day: { type: Type.NUMBER },
-      title: { type: Type.STRING },
+      day: { type: 'NUMBER' },
+      title: { type: 'STRING' },
       activities: {
-        type: Type.ARRAY,
+        type: 'ARRAY',
         items: {
-          type: Type.OBJECT,
+          type: 'OBJECT',
           properties: {
-            time: { type: Type.STRING },
-            description: { type: Type.STRING },
-            estimated_cost: { type: Type.STRING },
-            location: { type: Type.STRING },
+            time: { type: 'STRING' },
+            description: { type: 'STRING' },
+            estimated_cost: { type: 'STRING' },
+            location: { type: 'STRING' },
             booking_type: {
-              type: Type.STRING,
+              type: 'STRING',
               enum: ['Flight', 'Hotel', 'Food', 'Activity', 'Ride'],
               description: 'The category for booking this item. Omit if not bookable.'
             },

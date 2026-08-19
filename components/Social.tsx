@@ -118,7 +118,7 @@ const UserProfile: React.FC<{ user: User; posts: Post[]; onBack: () => void; }> 
                 </div>
             </div>
             <p className="font-semibold mt-4">{user.name}</p>
-            <p className="text-sm text-slate-500">Travel enthusiast exploring the world, one Vayama trip at a time! 📍 Sierra Leone</p>
+            <p className="text-sm text-slate-500">Travel enthusiast exploring the world, one KUNKU trip at a time! 📍 Sierra Leone</p>
         </div>
         <div className="grid grid-cols-3 gap-0.5">
             {posts.filter(p => p.user.name === user.name && p.content.imageUrl).map(post => (
@@ -606,7 +606,7 @@ const Social: React.FC<{ setActiveTab: (tab: Tab) => void; showNotification?: (m
            />
       )}
       <header className="sticky top-0 bg-white/80 dark:bg-black/80 backdrop-blur-sm p-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between z-10 flex-shrink-0">
-        <h1 className="text-xl font-bold">Vayama Social</h1>
+        <h1 className="text-xl font-bold">KUNKU Social</h1>
         <button onClick={() => setActiveTab(Tab.CHAT)} className="p-2 -mr-2">
             <SendIcon />
         </button>

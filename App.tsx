@@ -23,7 +23,7 @@ const App: React.FC = () => {
   const [bookingRequest, setBookingRequest] = useState<BookingRequest | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('vayama-theme') as Theme;
+    const savedTheme = (localStorage.getItem('kunku-theme') || localStorage.getItem('vayama-theme')) as Theme;
     return savedTheme || Theme.DARK;
   });
 
@@ -64,7 +64,7 @@ const App: React.FC = () => {
     const root = window.document.documentElement;
     root.classList.remove(theme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT);
     root.classList.add(theme);
-    localStorage.setItem('vayama-theme', theme);
+    localStorage.setItem('kunku-theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
